@@ -3,10 +3,14 @@
 	This reads a png image with PIL and constructs a scatter plot by sampling y values at random from
 	from the available x values. The code then encodes the y values into a single parameter theta, 
 	following the bit-by-bit construction in the paper. 
+	
+	This requires pillow (PIL) and mpmath:
+		python3 -m pip install pillow mpmath
+	
 """
 
 from random import sample, random
-from PIL import Image
+from PIL import Image # thsi library is called "pillow"
 
 # Read an image
 im = Image.open('miro.png')
@@ -15,13 +19,13 @@ Nx = 750 # How m any x-locations do we sample?
 
 # construct the y points by sampling a black pixel for each 1:Nx spanning the range of the image
 points = []
-for x in xrange(Nx):
+for x in range(Nx):
 
     px = int((float(x)/float(Nx)) * im.width) #NOTE: im.width may depend on the version of PIL?
 
     # find all of the y values that are black (or alomst black) at location px
     on = []
-    for py in xrange(1,im.height-1):
+    for py in range(1,im.height-1):
         pixel = im.getpixel( (px,py) )
         if(pixel[-1] == 0): continue # transparent
         if all(z < 10 for z in pixel[:3]):
@@ -89,14 +93,14 @@ omegastr = ""
 for x,y in points:
     omegastr += float2binary(phiinv(y))[:r]
 
-print "# ", omegastr
+print("# ", omegastr)
 omega = binary2float(omegastr) # convert omega to a mp real 
 theta = phi(omega) # compute theta
-print "# ", theta
+print("# ", theta)
 
 # now run the model to recover, print the fitted values
 for x,y in points:
     ymodel = m(r*x,theta)
 
     # these fitted values may then be plotted
-    print x, y, float(ymodel) 
+    print(x, y, float(ymodel))
